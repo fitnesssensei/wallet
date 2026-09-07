@@ -1,0 +1,16 @@
+# Контексты сборки, не нужные в образе
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+tests/
+.git/
+.env
+plan.md
+zadaniye.txt
+README.md
+docker-compose.yml
+Dockerfile
+.dockerignore

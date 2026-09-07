@@ -1,0 +1,39 @@
+# Подъём всей системы одной командой: docker-compose up --build
+services:
+  # --- PostgreSQL 16 (alpine-вариант образа — легче и уже есть локально) ---
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-wallets}
+      POSTGRES_USER: ${POSTGRES_USER:-wallet_user}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-wallet_password}
+    # Healthcheck: БД считается готовой, когда pg_isready проходит
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-wallet_user} -d ${POSTGRES_DB:-wallets}"]
+      interval: 3s
+      timeout: 3s
+      retries: 15
+    volumes:
+      - pgdata:/var/lib/postgresql/data   # данные переживают перезапуск контейнера
+    ports:
+      - "5432:5432"   # наружу — для локального запуска тестов
+
+  # --- Приложение FastAPI ---
+  app:
+    build: .
+    # env_file: переменные из .env передаются в контейнер
+    env_file: .env
+    environment:
+      # Внутри compose-сети хост БД — имя сервиса db
+      POSTGRES_HOST: db
+    # Стартуем только после того, как БД прошла healthcheck
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "8000:8000"
+    # Миграции применяются в entrypoint.sh перед стартом uvicorn
+    restart: unless-stopped
+
+volumes:
+  pgdata:
