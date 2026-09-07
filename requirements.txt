@@ -1,0 +1,16 @@
+# --- Основные зависимости приложения (Python 3.12) ---
+
+# Веб-фреймворк (async) + ASGI-сервер
+fastapi==0.115.6
+uvicorn[standard]==0.34.0
+
+# Async-ORM: SQLAlchemy 2.0 + драйвер PostgreSQL
+sqlalchemy[asyncio]==2.0.36
+asyncpg==0.30.0
+
+# Миграции базы данных
+alembic==1.14.0
+
+# Валидация и настройки
+pydantic==2.10.4
+pydantic-settings==2.7.0

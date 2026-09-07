@@ -1,0 +1,30 @@
+# --- Python ---
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+dist/
+build/
+.venv/
+venv/
+.python-version
+
+# --- Тесты и кэш инструментов ---
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.coverage
+htmlcov/
+
+# --- Переменные окружения (в репозитории только .env.example) ---
+.env
+.env.local
+
+# --- Локальные файлы задания (не публикуются) ---
+plan.md
+zadaniye.txt
+
+# --- IDE / ОС ---
+.idea/
+.vscode/
+.DS_Store
