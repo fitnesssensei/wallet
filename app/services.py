@@ -60,11 +60,7 @@ async def process_operation(
     """
     # --- Шаг 1-2: SELECT ... FOR UPDATE ---
     # with_for_update() блокирует строку до конца транзакции.
-    query = (
-        select(Wallet)
-        .where(Wallet.id == wallet_uuid)
-        .with_for_update()
-    )
+    query = select(Wallet).where(Wallet.id == wallet_uuid).with_for_update()
     result = await db.execute(query)
     wallet = result.scalar_one_or_none()
 
@@ -77,7 +73,7 @@ async def process_operation(
             # к savepoint, перечитываем строку с FOR UPDATE и работаем дальше.
             async with db.begin_nested():  # SAVEPOINT
                 try:
-                    wallet = Wallet(id=wallet_uuid, balance=Decimal("0"))
+                    wallet = Wallet(id=wallet_uuid, balance=Decimal(0))
                     db.add(wallet)
                     await db.flush()  # INSERT в текущей транзакции
                 except IntegrityError:

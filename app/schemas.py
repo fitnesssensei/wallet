@@ -4,13 +4,13 @@ import uuid
 from decimal import Decimal
 from enum import Enum
 
-from pydantic import BaseModel, Field, ConfigDict
+from pydantic import BaseModel, ConfigDict, Field
 
 
 class OperationType(str, Enum):
     """Допустимые типы операций с кошельком."""
 
-    DEPOSIT = "DEPOSIT"    # пополнение
+    DEPOSIT = "DEPOSIT"  # пополнение
     WITHDRAW = "WITHDRAW"  # списание
 
 

@@ -5,7 +5,6 @@
 чтобы не трогать данные основного окружения.
 """
 
-import asyncio
 import os
 import uuid
 
@@ -16,26 +15,23 @@ import uuid
 os.environ["POSTGRES_HOST"] = "localhost"
 os.environ["POSTGRES_PORT"] = "5440"
 
-import httpx  # noqa: E402
-import pytest  # noqa: E402
-import pytest_asyncio  # noqa: E402
-from httpx import ASGITransport  # noqa: E402
-from sqlalchemy import text  # noqa: E402
-from sqlalchemy.ext.asyncio import (  # noqa: E402
+import httpx
+import pytest_asyncio
+from httpx import ASGITransport
+from sqlalchemy import text
+from sqlalchemy.ext.asyncio import (
     async_sessionmaker,
     create_async_engine,
 )
 
-from app.config import settings  # noqa: E402
-from app.database import get_db  # noqa: E402
-from app.main import app  # noqa: E402
-from app.models import Base  # noqa: E402
+from app.config import settings
+from app.database import get_db
+from app.main import app
+from app.models import Base
 
 # URL тестовой БД: хост localhost (порт проброшен из контейнера),
 # база wallets_test — изолирована от основной
-TEST_DB_URL = settings.database_url.replace(
-    f"/{settings.postgres_db}", "/wallets_test"
-)
+TEST_DB_URL = settings.database_url.replace(f"/{settings.postgres_db}", "/wallets_test")
 
 
 @pytest_asyncio.fixture(scope="session")

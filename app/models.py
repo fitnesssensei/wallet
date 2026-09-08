@@ -38,7 +38,7 @@ class Wallet(Base):
         Numeric(20, 4),
         nullable=False,
         server_default="0",
-        default=Decimal("0"),
+        default=Decimal(0),
     )
 
     # timestamptz с дефолтом now() на стороне БД.

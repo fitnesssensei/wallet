@@ -6,11 +6,9 @@
 """
 
 import asyncio
-import random
+from decimal import Decimal
 
 import pytest
-
-from decimal import Decimal
 
 from tests.conftest import random_uuid
 

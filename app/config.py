@@ -17,20 +17,20 @@ class Settings(BaseSettings):
     """
 
     # --- Подключение к PostgreSQL ---
-    postgres_host: str = "db"          # в docker-compose хост = имя сервиса
+    postgres_host: str = "db"  # в docker-compose хост = имя сервиса
     postgres_port: int = 5432
     postgres_db: str = "wallets"
     postgres_user: str = "wallet_user"
     postgres_password: str = "wallet_password"
 
     # --- Настройки приложения ---
-    app_host: str = "0.0.0.0"          # адрес, на котором слушает uvicorn
+    app_host: str = "0.0.0.0"  # адрес, на котором слушает uvicorn
     app_port: int = 8000
 
     # --- Пул соединений (настроен под конкурентную нагрузку) ---
-    db_pool_size: int = 20             # базовый размер пула
-    db_max_overflow: int = 20          # доп. соединения при пиках нагрузки
-    db_pool_timeout: int = 30          # сек. ожидания свободного соединения
+    db_pool_size: int = 20  # базовый размер пула
+    db_max_overflow: int = 20  # доп. соединения при пиках нагрузки
+    db_pool_timeout: int = 30  # сек. ожидания свободного соединения
 
     model_config = SettingsConfigDict(
         # читаем .env из корня проекта; extra="ignore" — не падать

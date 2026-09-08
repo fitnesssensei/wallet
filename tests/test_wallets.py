@@ -1,8 +1,8 @@
 """Базовые сценарии эндпоинтов /api/v1/wallets."""
 
-import pytest
-
 from decimal import Decimal
+
+import pytest
 
 from tests.conftest import random_uuid
 

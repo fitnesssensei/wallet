@@ -1,0 +1,12 @@
+# Конфигурация ruff (линтер, PEP8)
+line-length = 88  # соответствует black
+
+[lint]
+# E,F,W — стандартные группы pycodestyle/pyflakes; I — сортировка импортов
+select = ["E", "F", "W", "I"]
+ignore = [
+    "B008",  # Depends() в дефолтах параметров — идиоматика FastAPI
+]
+
+[lint.isort]
+known-first-party = ["app", "tests"]

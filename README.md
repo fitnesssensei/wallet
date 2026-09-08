@@ -79,9 +79,41 @@ docker-compose up --build
 
 ### Локальный запуск тестов
 
+Тесты идут в Postgres-контейнер через порт `localhost:5440` (в compose проброшен из контейнера):
+
 ```bash
 pip install -r requirements-dev.txt
-pytest
+pytest          # 12 тестов: базовые сценарии + конкурентность
+```
+
+Проверка стиля кода:
+
+```bash
+ruff check .
+black --check .
+```
+
+### Примеры запросов (curl)
+
+```bash
+W=aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee
+B=http://localhost:8000/api/v1/wallets
+
+# Пополнить кошелёк (несуществующий кошелёк создаётся автоматически)
+curl -X POST $B/$W/operation -H 'Content-Type: application/json' \
+     -d '{"operation_type":"DEPOSIT","amount":1000}'
+# → {"wallet_uuid":"...","balance":"1000"}
+
+# Списать
+curl -X POST $B/$W/operation -H 'Content-Type: application/json' \
+     -d '{"operation_type":"WITHDRAW","amount":300}'
+# → {"wallet_uuid":"...","balance":"700"}
+
+# Узнать баланс
+curl $B/$W
+# → {"wallet_uuid":"...","balance":"700.0000"}
+
+# Ошибки: 400 (недостаточно средств), 404 (WITHDRAW/GET по несуществующему), 422 (валидация)
 ```
 
 ## Модель данных
@@ -95,12 +127,12 @@ pytest
 
 - [x] Изучить задание, составить план (`plan.md`)
 - [x] Каркас проекта: структура каталогов, `requirements*.txt`, `.gitignore`, `.env.example`
-- [ ] Конфиг, БД-слой, модель Wallet
-- [ ] Alembic-миграции
-- [ ] Схемы Pydantic + сервисный слой
-- [ ] Роутер и сборка приложения
-- [ ] Dockerfile + docker-compose
-- [ ] Тесты (базовые + конкурентные)
-- [ ] Прогон тестов, ручная проверка
-- [ ] Финализация README, проверка PEP8
-- [ ] Публикация на GitHub
+- [x] Конфиг, БД-слой, модель Wallet
+- [x] Alembic-миграции (async env.py, первая миграция, автоприменение при старте)
+- [x] Схемы Pydantic + сервисный слой (FOR UPDATE, savepoint для гонки ленивого создания)
+- [x] Роутер и сборка приложения
+- [x] Dockerfile + docker-compose (healthcheck, подъём одной командой)
+- [x] Тесты: 12 тестов — базовые сценарии + конкурентность (`pytest`)
+- [x] Прогон тестов и ручная проверка (`docker-compose up --build` + curl, 50 параллельных операций → баланс ровно как сумма)
+- [x] Финализация README, проверка PEP8 (ruff + black — все проверки пройдены)
+- [ ] Публикация на GitHub (репозиторий создан, финальный пуш после коммитов)
