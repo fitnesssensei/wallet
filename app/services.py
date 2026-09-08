@@ -12,6 +12,7 @@ import uuid
 from decimal import Decimal
 
 from sqlalchemy import select
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models import Wallet
@@ -70,11 +71,22 @@ async def process_operation(
     # --- Ленивое создание: DEPOSIT на несуществующий кошелёк ---
     if wallet is None:
         if operation_type == OperationType.DEPOSIT:
-            wallet = Wallet(id=wallet_uuid, balance=Decimal("0"))
-            db.add(wallet)
-            # flush отправит INSERT в БД в текущей транзакции — строка
-            # станет заблокированной для других транзакций.
-            await db.flush()
+            # Возможна гонка: два параллельных DEPOSIT одновременно видят,
+            # что кошелька нет, и оба делают INSERT. Обрабатываем через
+            # SAVEPOINT: при нарушении уникальности (второй INSERT) откатываемся
+            # к savepoint, перечитываем строку с FOR UPDATE и работаем дальше.
+            async with db.begin_nested():  # SAVEPOINT
+                try:
+                    wallet = Wallet(id=wallet_uuid, balance=Decimal("0"))
+                    db.add(wallet)
+                    await db.flush()  # INSERT в текущей транзакции
+                except IntegrityError:
+                    # Кошелёк уже создан параллельным запросом
+                    wallet = None
+            if wallet is None:
+                # Перечитываем уже существующую строку с блокировкой
+                result = await db.execute(query)
+                wallet = result.scalar_one()
         else:
             # WITHDRAW на несуществующий кошелёк → 404
             raise WalletNotFoundError(f"Wallet {wallet_uuid} not found")
